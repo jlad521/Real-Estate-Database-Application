@@ -1,0 +1,181 @@
+Big Data Bytes User Manual
+
+Conventions: 
+- Anything in [ ] is optional. 
+- x, y, z mean user entered values (i.e. -byOffice x means user would type -byOffice boston)
+- { } indicates one of the choices is required. Case is ignored.
+
+General Commands: 
+SQL mode: direct sql query
+Terminal Command: -sql
+
+Exit application:
+Terminal Command: exit || -e
+
+Logoff: (Logon is implicitly called when starting up the db)
+Terminal Command: logoff || -l
+
+Quit application:
+Terminal Command: quit || -q
+
+
+Go back to main view mode: 
+Terminal Command: back || -b
+
+
+Go to sale history view:
+Terminal Command: history
+
+
+Go to available properties view:
+Terminal Command: available
+
+
+Go to sold properties view:
+Terminal Command: sold 
+
+
+Go to client list view:
+Terminal Command: clients
+
+
+Go to agents view:
+Terminal Command: agents
+
+Go to update mode:
+Terminal Command: -u
+
+
+Sale History Commands:
+Enter fixed value (i.e. add fixed search parameter, like always by one office)
+Terminal Command: enter office x 
+sales totals of the entire business, or by specified offices or agents, sorted in ascending or descending order.
+Terminal Command: -total [-byOffice OR -byAgent {-asc OR -desc}] 
+Sql Query: 
+select sum(commission_percent * sale_price) as office_commission from saleHistory
+select sum(commission_percent * sale_price) as office_commission from saleHistory where location = x order by office ASC;
+ select sum(commission_percent * sale_price) as office_commission from saleHistory where location = x order by office DESC;
+select sum(commission_percent * sale_price) as office_commission from saleHistory where agent = x order by office ASC;
+select sum(commission_percent * sale_price) as office_commission from saleHistory where agent = x order by office DESC;
+ 
+Monthly sales totals by specific agent
+Terminal Command: -byAgent x 
+Sql Query: 
+select sum(commission_percent * sale_price) as agent_comission from saleHistory where agent = x;
+
+Find the office with the most sales.
+Terminal Command: -bestOffice
+Sql Query: 
+select office, sum(commission_percent * sale_price) as total_sales from saleHistory;
+/*
+Sales per agent, sorted by most to least revenue OR least to most
+Terminal Command: -sales {-byAgent x} [-byOffice x] {-desc OR -asc}                    
+Sql Query: 
+        */
+
+Available Properties Commands:
+Find the most expensive property.
+Terminal Command: -mostExpensive [-byOffice x]
+Sql Query: 
+select * from availableProperty order by asking_price limit 1;
+select * from availableProperty where office = 'Davis-Stroman' order by asking_price limit 1;
+
+Number of properties for sale managed by each office
+Terminal Command: -totalNumber [-byOffice x] [-min]
+Sql Query: 
+select count(*) as 'Total Number of Properties'     from availableProperty; 
+select count(*) as 'Total Number of Properties' from availableProperty where office = 'Davis-Stroman'; 
+select count(*) as 'Total Number of Properties' from availableProperty where office = 'Davis-Stroman' and asking_price > 5000000; 
+
+
+
+List all for sale properties in x,y,z (city, zip, or state) [-min]
+Terminal Command: {-byCity x OR -byOffice x} {-full OR -min}
+Sql Query: 
+select count(*) as 'Total Number of Properties' from availableProperty;
+select count(*) as 'Total Number of Properties' from availableProperty where office = 'Davis-Stroman';
+SELECT * FROM availableproperty where office = 'Mante-Barrows';
+List all properties by location and price range 
+Terminal Command: [-over x] [under y ] [-byOffice z OR -byCity x}  [-min]
+-full is default choice, have to type commands in this order if you want to use multiple
+Sql Query: 
+SELECT * FROM availableproperty where asking_price > 1099950;
+SELECT * FROM availableproperty where asking_price > 6099950;
+SELECT * FROM availableproperty where city_name = 'WEBSTER';
+SELECT * FROM availableproperty where asking_price between 2099950 and 6099950;
+SELECT * FROM availableproperty where asking_price between 2099950 and 6099950 and city_name = 'PENFIELD';
+Avg property price per office
+Terminal Command: -avgPrice {-byCity x OR -byOffice x} 
+Sql Query: 
+SELECT avg(asking_price) FROM availableproperty where city_name = 'PENFIELD';
+SELECT avg(asking_price) FROM availableproperty where office = 'Davis-Stroman';
+
+
+Sold Properties Commands:
+List all sold properties [by office]
+Terminal Command: -all [-byOffice x] {-desc OR -asc}
+Sql Query: 
+SELECT * FROM soldproperty order by office;
+SELECT * FROM soldproperty order by agent_Lname;
+SELECT * FROM soldproperty order by office desc;
+SELECT * FROM soldproperty order by agent_Lname desc;
+select * from soldProperty 
+Select * from soldProperty order by ASC;
+Select * from soldProperty order by DESC;
+select * from soldProperty where location = x order by ASC;
+Select * from soldProperty where location = x order by DESC;
+
+
+List all sales since x days ago
+Terminal Command: -since x [-byOffice x]
+Sql Query: 
+select * from soldProperty where date_signed <= ‘xx-xx-xxxx’
+
+Client List Commands:
+Print out information about all buyers [at x office]
+Terminal Command: -allBuyers [-byOffice x]
+Sql Query: 
+SELECT * FROM clientlist where client_type = 1;
+SELECT * FROM clientlist where client_type = 1 and office = 'Cremin Group';
+
+
+Print out information about x seller (for contact purpose)
+Terminal Command: -seller x
+Sql Query: 
+SELECT * FROM clientlist where client_type = 0 and client_Fname = 'Biron';
+
+
+Print out information about x buyer (for contact purpose)
+Terminal Command: -buyer x
+Sql Query: 
+SELECT * FROM clientlist where client_type = 1 and client_Fname = 'Klaus';
+
+
+Agents List Commands:
+List the primary office of all agents.
+Terminal Command: -primaryOffice
+Sql Query: 
+select * from agentList 
+
+Find the agent that sold the most properties this year.
+Terminal Command: -mostPropertySold [-byOffice x]
+Sql Query: 
+SELECT office , count(*) as 'number of sales' FROM salehistory group by office order by count(*) desc limit 1;
+
+
+List all agents and their info (select *) in x office
+Terminal Command: -list [-byOffice x]
+Sql Query: 
+select * from agentList;
+SELECT * FROM agentlist where office = 'Cole LLC'; 
+
+
+Sales of specified agent
+Terminal Command: -sales -byAgent x           
+Sql Query: 
+SELECT * FROM bigdatabyte.salehistory where agent_Fname = 'Mathias';
+
+
+
+
+
